@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="341dp"
+        android:layout_height="123dp"
+        android:layout_marginStart="35dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="35dp"
+        android:contentDescription="@string/logo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/logo" />
+
+    <Button
+        android:id="@+id/button_start"
+        android:layout_width="254dp"
+        android:layout_height="96dp"
+        android:layout_marginStart="122dp"
+        android:layout_marginEnd="122dp"
+        android:layout_marginBottom="260dp"
+        android:backgroundTint="@color/ping"
+        android:text="@string/start_game"
+        android:textSize="@dimen/_30dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imageView"
+        app:layout_constraintVertical_bias="1.0"
+        tools:ignore="SpUsage" />
+
+    <LinearLayout
+        android:id="@+id/main_form"
+        android:layout_width="356dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="35dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints"
+        android:gravity="center_horizontal"
+        android:visibility="gone">
+
+        <EditText
+            android:id="@+id/editText"
+            android:layout_width="match_parent"
+            android:layout_height="88dp"
+            android:autofillHints=""
+            android:ems="10"
+            android:inputType="text"
+            android:hint="@string/input_name"
+            tools:ignore="LabelFor" />
+
+        <Button
+            android:id="@+id/button_form_submit"
+            android:layout_width="254dp"
+            android:layout_height="96dp"
+            android:layout_marginStart="122dp"
+            android:layout_marginEnd="122dp"
+            android:layout_marginBottom="260dp"
+            android:backgroundTint="@color/yellow"
+            android:textColor="@color/black"
+            android:text="@string/submit"
+            android:textSize="@dimen/_30dp"
+            tools:ignore="SpUsage"
+            />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

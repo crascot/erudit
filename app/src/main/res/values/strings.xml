@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Erudit</string>
+    <string name="start_game">Начать игру</string>
+    <string name="logo">Logo</string>
+    <string name="input_name">Ваше имя</string>
+    <string name="input_password">Пароль</string>
+    <string name="submit">Подтвердить</string>
+    <string name="game_question">Вопрос:</string>
+    <string name="game_answer_button">Ответить</string>
+    <string name="players">Игроки:</string>
+    <string name="leaderboard">Таблица лидеров</string>
+    <string name="winner">Победитель</string>
+    <string name="points">Набрал больше всего очков</string>
+</resources>
