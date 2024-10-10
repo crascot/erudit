@@ -1,7 +1,7 @@
 package com.example.erudit.Modals;
 
 public class Player {
-    long id;
+    int id;
     String name;
-    long score;
+    int score;
 }
