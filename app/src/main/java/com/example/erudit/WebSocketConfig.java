@@ -10,11 +10,12 @@ import okio.ByteString;
 
 public class WebSocketConfig {
     private OkHttpClient client;
+    private WebSocket webSocket;
 
     public void start() {
         client = new OkHttpClient();
 
-        Request request = new Request.Builder().url("wss://your-websocket-url").build();
+        Request request = new Request.Builder().url("ws://localhost:8080").build();
 
         WebSocketListener listener = new WebSocketListener() {
             @Override
@@ -35,22 +36,26 @@ public class WebSocketConfig {
 
             @Override
             public void onClosing(WebSocket webSocket, int code, String reason) {
-                // Закрытие соединения
                 webSocket.close(1000, null);
                 System.out.println("WebSocket закрывается: " + reason);
             }
 
             @Override
             public void onFailure(WebSocket webSocket, Throwable t, okhttp3.Response response) {
-                // Ошибка в WebSocket-соединении
                 System.err.println("Ошибка WebSocket: " + t.getMessage());
             }
         };
 
-        // Открываем WebSocket-соединение
-        WebSocket webSocket = client.newWebSocket(request, listener);
+        webSocket = client.newWebSocket(request, listener);
 
-        // Запуск клиента в отдельном потоке
         client.dispatcher().executorService().shutdown();
+    }
+
+    public void sendMessage(String message) {
+        if (webSocket != null) {
+            webSocket.send(message);
+        } else {
+            System.out.println("WebSocket еще не подключен");
+        }
     }
 }

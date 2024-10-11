@@ -34,7 +34,12 @@ public class GameActivity extends AppCompatActivity {
 
         relativeLayout = findViewById(R.id.progressBar);
 
-        getQuestion();
+//        getQuestion();
+
+        WebSocketConfig webSocketConfig = new WebSocketConfig();
+        webSocketConfig.start();
+
+        webSocketConfig.sendMessage("Hi from GameActivity");
 
         buttonStart.setOnClickListener(new View.OnClickListener() {
             @Override
