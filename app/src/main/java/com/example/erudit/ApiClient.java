@@ -5,6 +5,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.erudit.Modals.Player;
 import com.example.erudit.Modals.Question;
 
 import retrofit2.Call;
@@ -51,21 +52,41 @@ public class ApiClient {
     }
 
     public void postUsername(Context context, String username, ApiCallback callback) {
-        Call<String> call = apiService.postUsername(username);
+        Call<Player> call = apiService.postUsername(username);
 
-        call.enqueue(new Callback<String>() {
+        call.enqueue(new Callback<Player>() {
             @Override
-            public void onResponse(@NonNull Call<String> call, @NonNull Response<String> response) {
+            public void onResponse(@NonNull Call<Player> call, @NonNull Response<Player> response) {
                 if (response.isSuccessful()) {
                     callback.onSuccess(response.body());
                 } else {
-                    callback.onFailure(new Throwable("Response not successful"));
+                    callback.onFailure(new Throwable("Ошибка при создании"));
                 }
             }
 
             @Override
-            public void onFailure(@NonNull Call<String> call, @NonNull Throwable t) {
+            public void onFailure(@NonNull Call<Player> call, @NonNull Throwable t) {
                 callback.onFailure(t);
+            }
+        });
+    }
+
+    public void joinGame(Context context, Player player, ApiCallback callback) {
+        Call<Boolean> call = apiService.joinGame(player);
+
+        call.enqueue(new Callback<Boolean>() {
+            @Override
+            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
+                if(response.isSuccessful()) {
+                    callback.onSuccess(response.body());
+                } else {
+                    callback.onFailure(new Throwable("Ошибка подключения к игре"));
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Boolean> call, Throwable t) {
+
             }
         });
     }

@@ -14,6 +14,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.erudit.Modals.Player;
+
 public class MainActivity extends AppCompatActivity {
     private EditText editText;
     private ApiClient apiClient;
@@ -50,11 +52,10 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 String username = editText.getText().toString();
                 if(!username.isEmpty()) {
-                    apiClient.postUsername(MainActivity.this, username, new ApiClient.ApiCallback<String>() {
+                    apiClient.postUsername(MainActivity.this, username, new ApiClient.ApiCallback<Player>() {
                         @Override
-                        public void onSuccess(String result) {
-                            Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
-                            goToGameActivity();
+                        public void onSuccess(Player player) {
+                            goToGameActivity(player);
                         }
 
                         @Override
@@ -69,8 +70,9 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void goToGameActivity() {
+    private void goToGameActivity(Player player) {
         Intent intent = new Intent(MainActivity.this, GameActivity.class);
+        intent.putExtra("player", player);
         startActivity(intent);
     }
 }
