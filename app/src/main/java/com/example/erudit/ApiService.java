@@ -1,5 +1,6 @@
 package com.example.erudit;
 
+import com.example.erudit.Modals.Player;
 import com.example.erudit.Modals.Question;
 
 import retrofit2.Call;
@@ -12,5 +13,8 @@ public interface ApiService {
     Call<Question> getQuestion();
 
     @POST("reg")
-    Call<String> postUsername(@Body String username);
+    Call<Player> postUsername(@Body String username);
+
+    @POST("addPlayer")
+    Call<Boolean> joinGame(@Body Player player);
 }
