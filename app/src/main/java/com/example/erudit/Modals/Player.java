@@ -1,54 +1,42 @@
 package com.example.erudit.Modals;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import java.io.Serializable;
 
-import androidx.annotation.NonNull;
-
-public class Player implements Parcelable {
-    int id;
+public class Player implements Serializable {
+    Long id;
     String name;
     int score;
     Boolean capitan;
 
-    protected Player(Parcel in) {
-        id = in.readInt();
-        name = in.readString();
-        score = in.readInt();
-        byte tmpCapitan = in.readByte();
-        capitan = tmpCapitan == 0 ? null : tmpCapitan == 1;
+    public Player(Long id, String name, int score, Boolean capitan) {
+        this.id = id;
+        this.name = name;
+        this.score = score;
+        this.capitan = capitan;
     }
-
+    public Long getId() {
+        return id;
+    }
     public String getName() {
         return name;
+    }
+    public int getScore() {
+        return score;
+    }
+    public Boolean getCapitan() {
+        return capitan;
     }
 
     public void setCapitan(Boolean capitan) {
         this.capitan = capitan;
     }
-
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
-        dest.writeString(name);
-        dest.writeInt(score);
-        dest.writeByte((byte) (capitan == null ? 0 : capitan ? 1 : 2));
+    public String toString() {
+        return "{"
+                + "\"id\":" + id + ","
+                + "\"name\":\"" + name + "\","
+                + "\"score\":" + score + ","
+                + "\"capitan\":" + capitan
+                + "}";
     }
-
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    public static final Creator<Player> CREATOR = new Creator<Player>() {
-        @Override
-        public Player createFromParcel(Parcel in) {
-            return new Player(in);
-        }
-
-        @Override
-        public Player[] newArray(int size) {
-            return new Player[size];
-        }
-    };
 }

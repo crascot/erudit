@@ -12,4 +12,5 @@
     <string name="leaderboard">Таблица лидеров</string>
     <string name="winner">Победитель</string>
     <string name="points">Набрал больше всего очков</string>
+    <string name="game_over">ИГРА ОКОНЧЕНА</string>
 </resources>

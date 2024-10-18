@@ -29,15 +29,24 @@ android {
 }
 
 dependencies {
+    // Для работы с WebSocket и STOMP
     implementation "com.squareup.okhttp3:okhttp:4.9.1"
+    implementation "org.java-websocket:Java-WebSocket:1.5.2"
+    implementation "org.java-websocket:Java-WebSocket:1.5.2"
+
+    // Для работы с JSON и Retrofit
     implementation "org.json:json:20210307"
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    implementation 'org.java-websocket:Java-WebSocket:1.5.2'
+
+    // Остальные зависимости
+    implementation "androidx.recyclerview:recyclerview:1.2.1"
     implementation libs.appcompat
     implementation libs.material
     implementation libs.activity
     implementation libs.constraintlayout
+
+    // Зависимости для тестов
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
     androidTestImplementation libs.espresso.core

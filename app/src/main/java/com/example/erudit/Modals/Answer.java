@@ -1,24 +1,25 @@
 package com.example.erudit.Modals;
 
 public class Answer {
-    int id;
-    String text;
+    Long id;
+    int idAnswer;
+    String answer;
 
-    public Answer(int id, String text) {
+    public Answer(Long id, int idAnswer, String answer) {
         this.id = id;
-        this.text = text;
+        this.idAnswer = idAnswer;
+        this.answer = answer;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public String getText() {
-        return text;
+    public int getIdAnswer() {
+        return idAnswer;
     }
 
-    @Override
-    public String toString() {
-        return "Answer" + "id: " + id + ", text: '" + text + '\'';
+    public String getAnswer() {
+        return answer;
     }
 }

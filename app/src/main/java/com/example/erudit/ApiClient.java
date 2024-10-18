@@ -5,9 +5,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.example.erudit.Modals.GameRecord;
 import com.example.erudit.Modals.Player;
 import com.example.erudit.Modals.Question;
 
+import java.net.URISyntaxException;
+import java.util.concurrent.TimeUnit;
+
+import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -21,8 +26,15 @@ public class ApiClient {
     private final ApiService apiService;
 
     public ApiClient() {
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .connectTimeout(180, TimeUnit.SECONDS)
+                .readTimeout(180, TimeUnit.SECONDS)
+                .writeTimeout(180, TimeUnit.SECONDS)
+                .build();
+
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
+                .client(okHttpClient)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
@@ -31,12 +43,15 @@ public class ApiClient {
 
     public void getQuestion(Context context, ApiCallback<Question> callback) {
         Call<Question> call = apiService.getQuestion();
-
         call.enqueue(new Callback<Question>() {
             @Override
             public void onResponse(@NonNull Call<Question> call, @NonNull Response<Question> response) {
                 if (response.isSuccessful() && response.body() != null) {
-                    callback.onSuccess(response.body());
+                    try {
+                        callback.onSuccess(response.body());
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
                 } else {
                     Toast.makeText(context, "Response not successful", Toast.LENGTH_SHORT).show();
                     callback.onFailure(new Throwable("Response not successful"));
@@ -58,7 +73,11 @@ public class ApiClient {
             @Override
             public void onResponse(@NonNull Call<Player> call, @NonNull Response<Player> response) {
                 if (response.isSuccessful()) {
-                    callback.onSuccess(response.body());
+                    try {
+                        callback.onSuccess(response.body());
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
                 } else {
                     callback.onFailure(new Throwable("Ошибка при создании"));
                 }
@@ -71,28 +90,8 @@ public class ApiClient {
         });
     }
 
-    public void joinGame(Context context, Player player, ApiCallback callback) {
-        Call<Boolean> call = apiService.joinGame(player);
-
-        call.enqueue(new Callback<Boolean>() {
-            @Override
-            public void onResponse(Call<Boolean> call, Response<Boolean> response) {
-                if(response.isSuccessful()) {
-                    callback.onSuccess(response.body());
-                } else {
-                    callback.onFailure(new Throwable("Ошибка подключения к игре"));
-                }
-            }
-
-            @Override
-            public void onFailure(Call<Boolean> call, Throwable t) {
-
-            }
-        });
-    }
-
     public interface ApiCallback<T> {
-        void onSuccess(T result);
+        void onSuccess(T result) throws URISyntaxException;
         void onFailure(Throwable t);
     }
 }

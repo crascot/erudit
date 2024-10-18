@@ -12,27 +12,21 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.erudit.Modals.Answer;
-import com.example.erudit.Modals.Player;
 import com.example.erudit.Modals.Question;
+import com.google.gson.Gson;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.util.ArrayList;
+import java.net.URISyntaxException;
+import java.util.Arrays;
 import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
-    private View contentLayout;
-    private TextView questionText;
+    private TextView question;
     private RadioGroup radioGroup;
     private RelativeLayout relativeLayout;
-    private TextView user1;
-    private TextView user2;
-    private TextView user3;
-    private TextView user4;
+    private Button buttonStart;
     private ApiClient apiClient;
-    private Player player;
+    private Question questionModel;
+    private int correctCout = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,66 +34,48 @@ public class GameActivity extends AppCompatActivity {
 
         apiClient = new ApiClient();
 
-        Intent intent = getIntent();
-        player = intent.getParcelableExtra("player");
+        relativeLayout = findViewById(R.id.progressBar);
 
-        apiClient = new ApiClient();
-
-        joinRoom();
-
-        contentLayout = findViewById(R.id.contentLayout);
-        questionText = findViewById(R.id.question);
+        question = findViewById(R.id.question);
         radioGroup = findViewById(R.id.answers);
 
-        user1 = findViewById(R.id.user1);
-        user1.setText(player.getName());
-
-        Button buttonStart = findViewById(R.id.button_start);
-
-        relativeLayout = findViewById(R.id.progressBar);
+        buttonStart = findViewById(R.id.button_start);
         buttonStart.setOnClickListener(v -> setAnswer());
+
+        GetQuestionFromServer();
     }
 
-    public void joinRoom() {
-        apiClient.joinGame(GameActivity.this, player, new ApiClient.ApiCallback<Boolean>() {
+    private void GetQuestionFromServer() {
+        relativeLayout.setVisibility(View.VISIBLE);
+        question.setText("");
+        radioGroup.removeAllViews();
+        apiClient.getQuestion(GameActivity.this, new ApiClient.ApiCallback<Question>() {
             @Override
-            public void onSuccess(Boolean isCapitan) {
-                player.setCapitan(isCapitan);
-                if(isCapitan) {
-                    Toast.makeText(GameActivity.this, "Вы являетесь капитаном", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(GameActivity.this, "Вы присоединились", Toast.LENGTH_SHORT).show();
+            public void onSuccess(Question result) throws URISyntaxException {
+                questionModel = result;
+                question.setText(result.getQuestionText());
+
+                for(Answer answer: result.getAnswers()) {
+                    RadioButton radioButton = new RadioButton(GameActivity.this);
+                    radioButton.setId(answer.getIdAnswer());
+                    radioButton.setText(answer.getAnswer());
+                    radioButton.setPadding(0, 60, 0, 60);
+
+                    radioGroup.addView(radioButton);
                 }
+
                 relativeLayout.setVisibility(View.GONE);
             }
 
             @Override
             public void onFailure(Throwable t) {
-                Toast.makeText(GameActivity.this, "Ошибка комнаты", Toast.LENGTH_SHORT).show();
-                gotoMain();
+                Toast.makeText(GameActivity.this, "Ошибка при получении ответа", Toast.LENGTH_SHORT).show();
+                System.out.println("Ошибка при получении ответа: " + t.getMessage());
             }
-        });
-    }
-
-    public void getDataFromWS(Question question) {
-        runOnUiThread(() -> {
-            contentLayout.setVisibility(View.VISIBLE);
-            questionText.setText(question.getQuestion());
-
-            for (int i = 0; i < radioGroup.getChildCount(); i++) {
-                View view = radioGroup.getChildAt(i);
-                if (view instanceof RadioButton) {
-                    RadioButton radioButton = (RadioButton) view;
-                    radioButton.setText(question.getAnswers().get(i).getText());
-                    radioButton.setId(question.getAnswers().get(i).getId());
-                }
-            }
-            relativeLayout.setVisibility(View.GONE);
         });
     }
 
     void setAnswer() {
-        Button buttonStart = findViewById(R.id.button_start);
         RadioGroup radioGroup = findViewById(R.id.answers);
         int selectedId = radioGroup.getCheckedRadioButtonId();
 
@@ -111,45 +87,24 @@ public class GameActivity extends AppCompatActivity {
             }
         }
 
-        if(selectedId == 1) {
-            Toast.makeText(this, "Вы ответили правильно", Toast.LENGTH_SHORT).show();
-            buttonStart.setText("Продолжить?");
+        if(selectedId == questionModel.getCorrect()) {
+            Toast.makeText(this, "Правильно, ожидайте следующий вопрос", Toast.LENGTH_SHORT).show();
+            incrementCorrectCout();
+            GetQuestionFromServer();
 
         } else {
             Toast.makeText(this, "Ответ неправильный", Toast.LENGTH_SHORT).show();
-        }
-    }
-    public void getQuestion(String questionData) {
-        try {
-            JSONObject jsonObject = new JSONObject(questionData);
-            Long questionId = jsonObject.getLong("questionId");
-            String questionText = jsonObject.getString("question");
-            int questionCorrect = jsonObject.getInt("correct");
-
-            JSONArray answersArray = jsonObject.getJSONArray("answers");
-            List<Answer> answerList = new ArrayList<>();
-
-            for (int i = 0; i < answersArray.length(); i++) {
-                JSONObject answerObject = answersArray.getJSONObject(i);
-
-                int id = answerObject.getInt("id");
-                String text = answerObject.getString("text");
-
-                Answer answer = new Answer(id, text);
-
-                answerList.add(answer);
-            }
-
-            Question question = new Question(questionId, questionText, answerList, questionCorrect);
-
-            getDataFromWS(question);
-        } catch (JSONException e) {
-            throw new RuntimeException(e);
+//            goToFinishActivity();
         }
     }
 
-    private void gotoMain() {
-        Intent intent = new Intent(GameActivity.this, MainActivity.class);
+    private void goToFinishActivity() {
+        Intent intent = new Intent(GameActivity.this, FinishActivity.class);
+        intent.putExtra("correctCout", correctCout);
         startActivity(intent);
+    }
+
+    public void incrementCorrectCout() {
+        correctCout += 1;
     }
 }

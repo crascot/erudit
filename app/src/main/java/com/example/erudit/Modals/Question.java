@@ -4,19 +4,19 @@ import java.util.List;
 
 public class Question {
     private Long questionId;
-    private final String question;
-    private final List<Answer> answers;
-    private final int correct;
+    private String questionText;
+    private List<Answer> answers;
+    private int correct = -1;
 
-    public Question(Long questionId, String question, List<Answer> answers, int correct){
+    public Question(Long questionId, String questionText, List<Answer> answers, int correct){
         this.questionId = questionId;
-        this.question = question;
+        this.questionText = questionText;
         this.answers = answers;
         this.correct = correct;
     }
 
-    public String getQuestion() {
-        return question;
+    public String getQuestionText() {
+        return questionText;
     }
     public  List<Answer> getAnswers() {
         return answers;
@@ -28,7 +28,7 @@ public class Question {
     @Override
     public String toString() {
         return "Question{" +
-                "question='" + question + '\'' +
+                "question='" + questionText + '\'' +
                 ", answers=" + answers +
                 ", correct=" + correct +
                 '}';
