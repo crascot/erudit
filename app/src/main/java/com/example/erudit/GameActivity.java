@@ -12,6 +12,8 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.erudit.Modals.Answer;
+import com.example.erudit.Modals.GameRecord;
+import com.example.erudit.Modals.Player;
 import com.example.erudit.Modals.Question;
 import com.google.gson.Gson;
 
@@ -20,6 +22,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
+    private UserObject app;
+    private Player player;
     private TextView question;
     private RadioGroup radioGroup;
     private RelativeLayout relativeLayout;
@@ -31,6 +35,9 @@ public class GameActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
+
+        app = (UserObject) getApplication();
+        player = app.getPlayer();
 
         apiClient = new ApiClient();
 
@@ -74,7 +81,6 @@ public class GameActivity extends AppCompatActivity {
             }
         });
     }
-
     void setAnswer() {
         RadioGroup radioGroup = findViewById(R.id.answers);
         int selectedId = radioGroup.getCheckedRadioButtonId();
@@ -94,7 +100,19 @@ public class GameActivity extends AppCompatActivity {
 
         } else {
             Toast.makeText(this, "Ответ неправильный", Toast.LENGTH_SHORT).show();
-//            goToFinishActivity();
+            GameRecord gameRecord = new GameRecord(player.getId(), correctCout);
+            apiClient.postGameRecord(gameRecord, new ApiClient.ApiCallback() {
+                @Override
+                public void onSuccess(Object result) throws URISyntaxException {
+                    System.out.println("Результат сохранен в базе");
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    System.out.println("Ошибка при сохранении результата");
+                }
+            });
+            goToFinishActivity();
         }
     }
 

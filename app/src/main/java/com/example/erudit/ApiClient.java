@@ -1,6 +1,7 @@
 package com.example.erudit;
 
 import android.content.Context;
+import android.content.Intent;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import com.example.erudit.Modals.Player;
 import com.example.erudit.Modals.Question;
 
 import java.net.URISyntaxException;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
@@ -62,6 +64,49 @@ public class ApiClient {
             public void onFailure(@NonNull Call<Question> call, @NonNull Throwable t) {
                 Toast.makeText(context, "Request failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
                 callback.onFailure(t);
+            }
+        });
+    }
+
+    public void getRaiting(Context context, ApiCallback callback) {
+        Call<List<Player>> call = apiService.getRaiting();
+
+        call.enqueue(new Callback<List<Player>>() {
+            @Override
+            public void onResponse(Call<List<Player>> call, Response<List<Player>> response) {
+                if(response.isSuccessful()) {
+                    try {
+                        callback.onSuccess(response.body());
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Player>> call, Throwable t) {
+
+            }
+        });
+    }
+
+    public void postGameRecord(GameRecord gameRecord, ApiCallback callback) {
+        Call<Integer> call = apiService.postGameRecord(gameRecord);
+        call.enqueue(new Callback<Integer>() {
+            @Override
+            public void onResponse(Call<Integer> call, Response<Integer> response) {
+                if(response.isSuccessful()) {
+                    try {
+                        callback.onSuccess(response.body());
+                    } catch (URISyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+
+            @Override
+            public void onFailure(Call<Integer> call, Throwable t) {
+
             }
         });
     }

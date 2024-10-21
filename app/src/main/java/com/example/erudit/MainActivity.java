@@ -14,9 +14,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.erudit.Modals.Player;
 
 
 public class MainActivity extends AppCompatActivity {
+    private UserObject app;
     private EditText editText;
     private ApiClient apiClient;
     @Override
@@ -29,6 +31,8 @@ public class MainActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        app = (UserObject) getApplication();
 
         editText = findViewById(R.id.editText);
 
@@ -44,25 +48,25 @@ public class MainActivity extends AppCompatActivity {
         });
 
         buttonFormSubmit.setOnClickListener(v -> {
-//            String username = editText.getText().toString();
-            goToGameActivity();
-//            if(!username.isEmpty()) {
-//                apiClient.postUsername(MainActivity.this, username, new ApiClient.ApiCallback<Player>() {
-//                    @Override
-//                    public void onSuccess(Player player) {
-//                        goToGameActivity();
-//                    }
-//                    @Override
-//                    public void onFailure(Throwable t) {
-//                        Toast.makeText(MainActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
-//                    }
-//                });
-//            } else {
-//                Toast.makeText(MainActivity.this, "Имя не должно быть пустым", Toast.LENGTH_SHORT).show();
-//            }
+            String username = editText.getText().toString();
+            if(!username.isEmpty()) {
+                apiClient.postUsername(MainActivity.this, username, new ApiClient.ApiCallback<Player>() {
+                    @Override
+                    public void onSuccess(Player player) {
+                        goToGameActivity(player);
+                    }
+                    @Override
+                    public void onFailure(Throwable t) {
+                        Toast.makeText(MainActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Toast.makeText(MainActivity.this, "Имя не должно быть пустым", Toast.LENGTH_SHORT).show();
+            }
         });
     }
-    private void goToGameActivity() {
+    private void goToGameActivity(Player player) {
+        app.setPlayer(player);
         Intent intent = new Intent(MainActivity.this, GameActivity.class);
         startActivity(intent);
     }

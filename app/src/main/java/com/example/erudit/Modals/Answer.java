@@ -1,20 +1,13 @@
 package com.example.erudit.Modals;
 
 public class Answer {
-    Long id;
     int idAnswer;
     String answer;
 
-    public Answer(Long id, int idAnswer, String answer) {
-        this.id = id;
+    public Answer(int idAnswer, String answer) {
         this.idAnswer = idAnswer;
         this.answer = answer;
     }
-
-    public Long getId() {
-        return id;
-    }
-
     public int getIdAnswer() {
         return idAnswer;
     }
