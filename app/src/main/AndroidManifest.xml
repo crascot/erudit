@@ -4,6 +4,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:name=".UserObject"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -27,6 +28,24 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.GAME" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".FinishActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.FINISH" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".LeaderboardActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.LEADERBOARD" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
