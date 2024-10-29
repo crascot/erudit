@@ -7,8 +7,10 @@
     <string name="submit">Подтвердить</string>
     <string name="game_question">Вопрос:</string>
     <string name="game_answer_button">Ответить</string>
+    <string name="ready">Готов</string>
     <string name="players">Игроки:</string>
     <string name="leaderboard">Таблица лидеров</string>
     <string name="winner">Победитель</string>
     <string name="points">Набрал больше всего очков</string>
+    <string name="game_over">ИГРА ОКОНЧЕНА</string>
 </resources>

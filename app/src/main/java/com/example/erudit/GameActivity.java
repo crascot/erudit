@@ -1,8 +1,8 @@
 package com.example.erudit;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
@@ -11,54 +11,64 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.erudit.Modals.Answer;
+import com.example.erudit.Modals.GameRecord;
+import com.example.erudit.Modals.Player;
 import com.example.erudit.Modals.Question;
+import com.google.gson.Gson;
+
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.List;
 
 public class GameActivity extends AppCompatActivity {
-    private View contentLayout;
-    private TextView questionText;
+    private UserObject app;
+    private Player player;
+    private TextView question;
     private RadioGroup radioGroup;
-    private ApiClient apiClient;
     private RelativeLayout relativeLayout;
-
+    private Button buttonStart;
+    private ApiClient apiClient;
+    private Question questionModel;
+    private int correctCout = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
-        contentLayout = findViewById(R.id.contentLayout);
-        questionText = findViewById(R.id.question);
-        radioGroup = findViewById(R.id.answers);
-
-        Button buttonStart = findViewById(R.id.button_start);
+        app = (UserObject) getApplication();
+        player = app.getPlayer();
 
         apiClient = new ApiClient();
 
         relativeLayout = findViewById(R.id.progressBar);
 
-        getQuestion();
+        question = findViewById(R.id.question);
+        radioGroup = findViewById(R.id.answers);
 
-        buttonStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setAnswer();
-            }
-        });
+        buttonStart = findViewById(R.id.button_start);
+        buttonStart.setOnClickListener(v -> setAnswer());
+
+        GetQuestionFromServer();
     }
 
-    private void getQuestion() {
-        apiClient.getQuestion(this, new ApiClient.ApiCallback<Question>() {
+    private void GetQuestionFromServer() {
+        relativeLayout.setVisibility(View.VISIBLE);
+        question.setText("");
+        radioGroup.removeAllViews();
+        apiClient.getQuestion(GameActivity.this, new ApiClient.ApiCallback<Question>() {
             @Override
-            public void onSuccess(Question question) {
-                contentLayout.setVisibility(View.VISIBLE);
-                questionText.setText(question.getQuestion());
+            public void onSuccess(Question result) throws URISyntaxException {
+                questionModel = result;
+                question.setText(result.getQuestionText());
 
-                for (int i = 0; i < radioGroup.getChildCount(); i++) {
-                    View view = radioGroup.getChildAt(i);
-                    if (view instanceof RadioButton) {
-                        RadioButton radioButton = (RadioButton) view;
-                        radioButton.setText(question.getAnswers().get(i).getText());
-                        radioButton.setId(question.getAnswers().get(i).getId());
-                    }
+                for(Answer answer: result.getAnswers()) {
+                    RadioButton radioButton = new RadioButton(GameActivity.this);
+                    radioButton.setId(answer.getIdAnswer());
+                    radioButton.setText(answer.getAnswer());
+                    radioButton.setPadding(0, 60, 0, 60);
+
+                    radioGroup.addView(radioButton);
                 }
 
                 relativeLayout.setVisibility(View.GONE);
@@ -66,13 +76,12 @@ public class GameActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Throwable t) {
-                Toast.makeText(GameActivity.this, "Request failed: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(GameActivity.this, "Ошибка при получении ответа", Toast.LENGTH_SHORT).show();
+                System.out.println("Ошибка при получении ответа: " + t.getMessage());
             }
         });
     }
-
     void setAnswer() {
-        Button buttonStart = findViewById(R.id.button_start);
         RadioGroup radioGroup = findViewById(R.id.answers);
         int selectedId = radioGroup.getCheckedRadioButtonId();
 
@@ -84,12 +93,36 @@ public class GameActivity extends AppCompatActivity {
             }
         }
 
-        if(selectedId == 1) {
-            Toast.makeText(this, "Вы ответили правильно", Toast.LENGTH_SHORT).show();
-            buttonStart.setText("Продолжить?");
+        if(selectedId == questionModel.getCorrect()) {
+            Toast.makeText(this, "Правильно, ожидайте следующий вопрос", Toast.LENGTH_SHORT).show();
+            incrementCorrectCout();
+            GetQuestionFromServer();
 
         } else {
             Toast.makeText(this, "Ответ неправильный", Toast.LENGTH_SHORT).show();
+            GameRecord gameRecord = new GameRecord(player.getId(), correctCout);
+            apiClient.postGameRecord(gameRecord, new ApiClient.ApiCallback() {
+                @Override
+                public void onSuccess(Object result) throws URISyntaxException {
+                    System.out.println("Результат сохранен в базе");
+                }
+
+                @Override
+                public void onFailure(Throwable t) {
+                    System.out.println("Ошибка при сохранении результата");
+                }
+            });
+            goToFinishActivity();
         }
+    }
+
+    private void goToFinishActivity() {
+        Intent intent = new Intent(GameActivity.this, FinishActivity.class);
+        intent.putExtra("correctCout", correctCout);
+        startActivity(intent);
+    }
+
+    public void incrementCorrectCout() {
+        correctCout += 1;
     }
 }

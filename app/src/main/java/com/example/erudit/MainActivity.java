@@ -14,10 +14,13 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.erudit.Modals.Player;
+
+
 public class MainActivity extends AppCompatActivity {
+    private UserObject app;
     private EditText editText;
     private ApiClient apiClient;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
+        app = (UserObject) getApplication();
+
         editText = findViewById(R.id.editText);
 
         Button btnStart = findViewById(R.id.button_start);
@@ -37,39 +42,31 @@ public class MainActivity extends AppCompatActivity {
 
         apiClient = new ApiClient();
 
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        btnStart.setOnClickListener(v -> {
                 v.setVisibility(View.GONE);
                 mainForm.setVisibility(View.VISIBLE);
-            }
         });
 
-        buttonFormSubmit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String username = editText.getText().toString();
-                if(!username.isEmpty()) {
-                    apiClient.postUsername(MainActivity.this, username, new ApiClient.ApiCallback<String>() {
-                        @Override
-                        public void onSuccess(String result) {
-                            Toast.makeText(MainActivity.this, result, Toast.LENGTH_SHORT).show();
-                            goToGameActivity();
-                        }
-
-                        @Override
-                        public void onFailure(Throwable t) {
-                            Toast.makeText(MainActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                } else {
-                    Toast.makeText(MainActivity.this, "Имя не должно быть пустым", Toast.LENGTH_SHORT).show();
-                }
+        buttonFormSubmit.setOnClickListener(v -> {
+            String username = editText.getText().toString();
+            if(!username.isEmpty()) {
+                apiClient.postUsername(MainActivity.this, username, new ApiClient.ApiCallback<Player>() {
+                    @Override
+                    public void onSuccess(Player player) {
+                        goToGameActivity(player);
+                    }
+                    @Override
+                    public void onFailure(Throwable t) {
+                        Toast.makeText(MainActivity.this, t.toString(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } else {
+                Toast.makeText(MainActivity.this, "Имя не должно быть пустым", Toast.LENGTH_SHORT).show();
             }
         });
     }
-
-    private void goToGameActivity() {
+    private void goToGameActivity(Player player) {
+        app.setPlayer(player);
         Intent intent = new Intent(MainActivity.this, GameActivity.class);
         startActivity(intent);
     }
